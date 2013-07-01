@@ -6,7 +6,7 @@ Api mvc to login user
 -------------------------
 Developed with:
 
-Visual Studio.Net MVC4
+Visual Studio.Net MVC4 and 
 SQL Server 2012
 
 -----------------------
