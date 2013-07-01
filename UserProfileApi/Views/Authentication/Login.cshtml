@@ -1,0 +1,184 @@
+﻿@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<section class="container">
+
+ <div class="login">
+      <h1>Login</h1>
+     
+        <p><input type="text" id="username" value="" placeholder="Username"/></p>
+        <p><input type="password" id="password" value="" placeholder="Password"/></p>        
+        <p class="submit"><input type="submit"  id="btnSubmit" value="Login"/></p>  
+   </div>    
+    <div class="result">
+       </div>
+       <input type="hidden" name="tokenUser" />
+          
+       <div  class="btndetails"> 
+            <p class="submit"><input type="submit"  id="btnDetail" value="View Details"/></p>
+       </div>
+       <div class="userDetails"> 
+       </div>
+
+       <div class="Userlogout">
+       <p class="logout"><input type="submit"  id="btnLogOut" value="Logout"/></p>  
+       </div> 
+
+    
+ </section>
+
+ <script type="text/javascript">
+     $(document).ready(function () {
+
+         $(".result").invisible();
+         $(".btndetails").invisible();
+         $(".userDetails").invisible();
+         $(".Userlogout").invisible();
+
+         $("#btnSubmit").click(function () {
+             
+             var UserName = $("#username").val();
+             var Password = $("#password").val();
+             
+             authenticate(UserName, Password);
+         });
+     });
+
+     
+     function authenticate(UserName, Password) {
+         var user = {
+         username:UserName,
+         password:Password
+         };
+
+         var content = null;
+
+         $.ajax
+        ({
+            type: "POST",
+            url: "api/Login/",
+            dataType: 'json',
+            data: user,
+            success: function (data) {
+                if (data.message != null) {
+                    content = '<li>' + data.message + '</li>';
+
+                    $(".result").html("");
+                    $(content).appendTo(".result");
+                    $(".result").visible();
+                }
+                else {
+
+                    content = '<li>Authentication successfully. Token: ' + data.token + ' </li>';
+
+                    $("#username").val("");
+                    $("#password").val("");
+                    $(".result").html("");
+                    $(content).appendTo(".result");
+
+                    $('input[name=tokenUser]').val(data.token);
+                    alert($('input[name=tokenUser]').val());
+
+                    $(".login").invisible();
+                    $(".result").visible();
+                    $(".btndetails").visible();
+                    $(".userDetails").visible();
+                    $(".Userlogout").visible();
+
+                    
+                   
+
+                }
+
+            },
+            error: function (xhr, status, p3, p4) {
+                var err = "Error " + " " + status + " " + p3;
+                if (xhr.responseText && xhr.responseText[0] == "{")
+                    err = JSON.parse(xhr.responseText).message;
+
+                alert(err);
+            }
+        });
+    }
+
+   
+        
+
+
+        $("#btnDetail").click(function () {
+        
+        var content = null;
+
+        var tokenUser = $('input[name=tokenUser]').val();
+
+            $.ajax
+            ({
+                type: "GET",
+                url: "api/Login?idToken=" + tokenUser,
+                dataType: 'json',
+                success: function (data) {
+
+                    content = '<li>Fist Name: ' + data.FirstName + '</li>';
+                    content += '<li>Middle Name: ' + data.MiddleName + '</li>';
+                    content += '<li>Last Name: ' + data.LastName + '</li>';
+                    content += '<li>Email: ' + data.Email + '</li>';
+                    content += '<li>Address: ' + data.Address + '</li>';
+                    content += '<li>Phone: ' + data.Phone + '</li>';
+
+                    $(".userDetails").html("");
+                    $(content).appendTo(".userDetails");
+
+                   
+
+                }
+            });
+        });
+   
+
+    
+
+        $("#btnLogOut").click(function () {
+
+            var content = null;
+            var tokenUser = $('input[name=tokenUser]').val();
+
+            $.ajax
+            ({
+                type: "DELETE",
+                url: "api/Login?idToken=" + tokenUser,
+                dataType: 'json',
+                success: function (data) {
+                    content = '<li> Logout :' + data.result + '</li>';
+
+                    $(".result").html("");
+                    $(content).appendTo(".result");
+
+                    $(".login").visible();
+                    $(".result").visible();
+                    $(".btndetails").invisible();
+                    $(".userDetails").invisible();
+                    $(".Userlogout").invisible();
+                }
+            });
+        });
+   
+
+
+ 
+ (function ($) {
+     $.fn.invisible = function () {
+         return this.each(function () {
+             $(this).css("visibility", "hidden");
+         });
+     };
+     $.fn.visible = function () {
+         return this.each(function () {
+             $(this).css("visibility", "visible");
+         });
+     };
+ } (jQuery));
+
+ </script>
