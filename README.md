@@ -65,7 +65,7 @@ Instructions
     SET ANSI_PADDING OFF
     GO
     
-2. Add a nuew user in the table [Users]
+2. Add a new user in the table [Users]
 3. Connect the key switch "UsersProfilesConnectionString" to the database in the configuration file
 4. Run to application
 
